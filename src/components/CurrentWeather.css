@@ -10,7 +10,7 @@
 }
 
 .current-weather__icon {
-    height: 40%;
+    height: auto;
     width: 40%;
 }
 
