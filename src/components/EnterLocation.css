@@ -1,0 +1,24 @@
+.enter-location {
+    display: flex;
+}
+
+.enter-location__input {
+    box-sizing: border-box;
+    font-size: 30px;
+    height: 45px;
+    padding-left: 10px;
+    width: 400px;
+}
+
+.enter-location__submit {
+    background-color: #d0393b;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 20px;
+    height: 45px;
+    margin-left: 5px;
+    width: 100px;
+}
