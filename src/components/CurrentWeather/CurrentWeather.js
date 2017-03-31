@@ -16,21 +16,21 @@ export default function CurrentWeather( { weather, reset } ) {
 	return (
 		<div className="current-weather">
 			<div className="current-weather__weather">
-				<h3 className="current-weather__location">{ location }</h3>
+				<h3 className="current-weather__location">Provo</h3>
 				<img
 					alt="sunny"
 					className="current-weather__icon"
 					src={ icon }
 				/>
-				<h3 className="current-weather__temp">{ currentTemperature }°</h3>
+				<h3 className="current-weather__temp">44°</h3>
 
 				<div className="current-weather__separator" />
 
 				<ul className="current-weather__stats">
-					<li className="current-weather__stat">Max: { maxTemperature }°</li>
-					<li className="current-weather__stat">Min: { minTemperature }°</li>
-					<li className="current-weather__stat">Wind: { wind } MPH</li>
-					<li className="current-weather__stat">Humidity: { humidity }%</li>
+					<li className="current-weather__stat">Max: 68°</li>
+					<li className="current-weather__stat">Min: 34°</li>
+					<li className="current-weather__stat">Wind: 4,38 MPH</li>
+					<li className="current-weather__stat">Humidity: 62%</li>
 				</ul>
 			</div>
 			<button
