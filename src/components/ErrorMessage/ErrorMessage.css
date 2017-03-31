@@ -1,0 +1,23 @@
+.error-message {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.error-message__message {
+    color: #ffffff;
+    font-size: 28px;
+}
+
+.error-message__try-again {
+    background-color: #d0393b;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 20px;
+    height: 45px;
+    margin-top: 20px;
+    width: 100%;
+}

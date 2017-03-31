@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import "./EnterLocation.css";
 
-import { getWeather } from "../services/weatherService";
+import { getWeather } from "../../services/weatherService";
 
 export default class EnterLocation extends Component {
 	constructor( props ) {
