@@ -150,6 +150,37 @@ export function setWeather( weatherPromise ) {
 
 </details>
 
+### Step 2
+
+**Summary**
+
+In this step we will actually fetch the weather data, as well as display our loading indicator.
+
+**Detailed Instructions**
+
+To start this step, create a new file in `src` named `apiKey.js`. You might note that `apiKey.js` is in the `.gitignore`, this is because API keys are something that should be kept secret! If your API key ends up on GitHub anyone could use it! `src/apiKey.js` should simply `export default "YOUR_API_KEY_HERE"`. You can find your API key on the OpenWeatherMap account page under the "API keys" tab.
+
+Next, open up `src/utils/weatherUtils.js`. This file contains a handful of helper functions for formatting data. Go ahead and import `API_KEY` from `src/apiKey.js`. Create a new variable named `BASE_URL` and set it equal to <code>`http://api.openweathermap.org/data/2.5/weather?APPID=${ API_KEY }&units=imperial&`</code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Contributions
 
 ### Contributions
