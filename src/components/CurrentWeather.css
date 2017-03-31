@@ -1,5 +1,12 @@
 .current-weather {
     align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.current-weather__weather {
+    align-items: center;
     background-color: rgba(11, 15, 107, 0.6);
     border-radius: 5px;
     color: #ffffff;
@@ -33,4 +40,17 @@
 
 .current-weather__stat {
     margin-bottom: 10px;
+}
+
+.current-weather__search-again {
+    background-color: #d0393b;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 20px;
+    height: 45px;
+    margin-top: 20px;
+    width: 100%;
 }

@@ -1,4 +1,5 @@
 const FETCH_WEATHER = "FETCH_WEATHER";
+const RESET = "RESET";
 
 const initialState = {
 	  loading: false
@@ -20,10 +21,15 @@ export default function weather( state = initialState, action ) {
 				, search: false
 				, weather: action.payload
 			};
+		case RESET: return initialState;
 		default: return state;
 	}
 }
 
 export function setWeather( weatherPromise ) {
 	return { type: FETCH_WEATHER, payload: weatherPromise };
+}
+
+export function reset() {
+	return { type: RESET };
 }
