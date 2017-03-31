@@ -1,5 +1,6 @@
-import { createStore } from "redux";
+import { applyMiddleware, createStore } from "redux";
+import promiseMiddleware from "redux-promise-middleware";
 
 import weather from "./ducks/weather";
 
-export default createStore( weather );
+export default createStore( weather, {}, applyMiddleware( promiseMiddleware() ) );
