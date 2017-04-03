@@ -154,7 +154,7 @@ export function setWeather( weatherPromise ) {
 
 **Summary**
 
-In this step we will actually fetch the weather data, as well as display our loading indicator.
+In this step we will fetch the weather data and place it on application state.
 
 **Detailed Instructions**
 
@@ -365,6 +365,36 @@ export default class EnterLocation extends Component {
 </details>
 
 </details>
+
+### Step 3
+
+**Summary**
+
+In this step we will be displaying all the different child components based on application state.
+
+**Detailed Instructions**
+
+This step will take place in `src/App.js`. Once the project is complete the `App` component will conditionally render one of four components, let's break this out into a new method to keep `render` clean. Create a method `renderChildren` which takes no parameters. This method will look at application state to determine what to render:
+
+* If `props.error` is truthy, return the `ErrorMessage` component, passing `props.reset` as a prop.
+* If `props.loading` is truthy return an image with a `src` prop of `hourglass`. `hourglass` is an animated loading indicator.
+* If `props.search` is truthy return the `EnterLocation` component
+* Otherwise, return the `CurrentWeather` component.
+
+In `render` replace the `EnterLocation` component with `{ this.renderChildren() }`. App should now display different components based on the user input. Try entering some valid and invalid locations to ensure everything is displaying as expected.
+
+<details>
+
+<summary><b>Code Solution</b></summary>
+
+```jsx
+// src/App.js
+
+```
+
+
+</details>
+
 
 
 
