@@ -180,13 +180,61 @@ const weatherPromise = axios.get( buildUrl )
 
 Here we make a request to get some data, and use `.then` to run a callback function at some point in the future when the data comes back. In the callback function we log out the response to get an idea of what the data looks like by default, then we adjust it to match the structure we need using the `formatWeatherData` function from `src/utils/weatherUtils.js`, finally we return the data.
 
-Now that we have our promise of data we can dispatch it to the middleware and reducer. Invoke `store.dispatch` passing `setWeather( weatherPromise )`. Let's pause and take a look at how the data is flowing here.
+Now that we have our promise of data we can dispatch it to the middleware and reducer. Invoke `store.dispatch` passing `setWeather( weatherPromise )`. Let's pause and take a look at how the data will be flowing here.
 
 <img src="https://raw.githubusercontent.com/DevMountain/weatherman/master/readme-assets/data-flow.png" />
 
+A user will enter their location via the `EnterLocation` component and we will call `getWeather`. `getWeather` makes a request to get some data and dispatches a `setWeather` action. The action is intercepted by the middleware which will instead dispatch an action type of `"SET_WEATHER_PENDING"`. After the data comes back from the API the middleware will dispatch either `SET_WEATHER_FULFILLED` or `SET_WEATHER_REJECTED` depending on whether the request was succesful.
 
+Lastly for this step we'll connect this functionality to the interface. Open up `src/components/EnterLocation/EnterLocation.js` and import `getWeather` from `src/services/weatherService.js`. Alter the `handleSubmit` method so that it calls `getWeather` passing in `this.state.location`.
 
+You should now be able to submit a location and see the `console.log`'s of the weather data!
 
+<details>
+
+<summary><b>Code Solution</b></summary>
+
+<details>
+
+<summary><code>src/apiKey.js</code></summary>
+
+```javascript
+export default "YOUR_API_KEY_HERE";
+```
+
+</details>
+
+<details>
+
+<summary><code>src/utils/weatherUtils</code></summary>
+
+```javascript
+export default "YOUR_API_KEY_HERE";
+```
+
+</details>
+
+<details>
+
+<summary><code>src/services/weatherService</code></summary>
+
+```javascript
+export default "YOUR_API_KEY_HERE";
+```
+
+</details>
+
+<details>
+
+<summary><code>src/components/EnterLocation/EnterLocation.js</code></summary>
+
+```javascript
+export default "YOUR_API_KEY_HERE";
+```
+
+</details>
+
+</details>
 
 
 
