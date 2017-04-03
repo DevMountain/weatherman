@@ -39,7 +39,10 @@ class App extends Component {
 		}
 
 		return (
-			<CurrentWeather />
+			<CurrentWeather
+				reset={ reset }
+				weather={ weather }
+			/>
 		);
 	}
 
