@@ -2,7 +2,7 @@
 
 # Weatherman
 
-<img src="https://raw.githubusercontent.com/DevMountain/weatherman/master/solution.PNG"/>
+<img src="https://raw.githubusercontent.com/DevMountain/weatherman/master/readme-assets/solution.PNG"/>
 
 **Project Summary**
 
@@ -149,6 +149,231 @@ export function setWeather( weatherPromise ) {
 </details>
 
 </details>
+
+### Step 2
+
+**Summary**
+
+In this step we will actually fetch the weather data, as well as display our loading indicator.
+
+**Detailed Instructions**
+
+To start this step, create a new file in `src` named `apiKey.js`. You might note that `apiKey.js` is in the `.gitignore`, this is because API keys are something that should be kept secret! If your API key ends up on GitHub anyone could use it! `src/apiKey.js` should simply `export default "YOUR_API_KEY_HERE"`. You can find your API key on the OpenWeatherMap account page under the "API keys" tab.
+
+Next, open up `src/utils/weatherUtils.js`. This file contains a handful of helper functions for formatting data. Go ahead and import `API_KEY` from `src/apiKey.js`. Create a new variable named `BASE_URL` and set it equal to the string `http://api.openweathermap.org/data/2.5/weather?APPID=${ API_KEY }&units=imperial&`. It's good practice to set up a base URL like this, now we don't have to worry about changing it in a dozen places if the URL ever changes!
+
+Near the bottom of the file there is an incomplete `buildUrl` function, let's update it to actually do things. We want users to be able to search by zip code or by city name but they require different URL's. Using the (rudimentary) `isZip` function check whether the `location` parameter is a zip code. If `location` is a zip code return ```BASE_URL + `zip=${ location }` ``` otherwise return ```BASE_URL + `q=${ location }` ```.
+
+Now that we are ready to build a URL, open up `src/services/weatherService.js` and import `setWeather` from `src/ducks/weather.js`. Inside of the `getWeather` function create a variable named `weatherPromise` and set it equal to the following:
+
+```javascript
+const weatherPromise = axios.get( buildUrl )
+	.then( response => {
+		console.log( response );
+
+		const formattedData = formatWeatherData( response.data );
+		console.log( formattedData );
+
+		return formattedData;
+	} );
+```
+
+Here we make a request to get some data, and use `.then` to run a callback function at some point in the future when the data comes back. In the callback function we log out the response to get an idea of what the data looks like by default, then we adjust it to match the structure we need using the `formatWeatherData` function from `src/utils/weatherUtils.js`, finally we return the data.
+
+Now that we have our promise of data we can dispatch it to the middleware and reducer. Invoke `store.dispatch` passing `setWeather( weatherPromise )`. Let's pause and take a look at how the data will be flowing here.
+
+<img src="https://raw.githubusercontent.com/DevMountain/weatherman/master/readme-assets/data-flow.png" />
+
+A user will enter their location via the `EnterLocation` component and we will call `getWeather`. `getWeather` makes a request to get some data and dispatches a `setWeather` action. The action is intercepted by the middleware which will instead dispatch an action type of `"SET_WEATHER_PENDING"`. After the data comes back from the API the middleware will dispatch either `SET_WEATHER_FULFILLED` or `SET_WEATHER_REJECTED` depending on whether the request was succesful.
+
+Lastly for this step we'll connect this functionality to the interface. Open up `src/components/EnterLocation/EnterLocation.js` and import `getWeather` from `src/services/weatherService.js`. Alter the `handleSubmit` method so that it calls `getWeather` passing in `this.state.location`.
+
+You should now be able to submit a location and see the `console.log`'s of the weather data!
+
+<details>
+
+<summary><b>Code Solution</b></summary>
+
+<details>
+
+<summary><code>src/apiKey.js</code></summary>
+
+```javascript
+export default "YOUR_API_KEY_HERE";
+```
+
+</details>
+
+<details>
+
+<summary><code>src/utils/weatherUtils</code></summary>
+
+```javascript
+
+import cloudy from "../assets/cloudy.svg";
+import partlyCloudy from "../assets/partly-cloudy.svg";
+import rainy from "../assets/rainy.svg";
+import snowy from "../assets/snowy.svg";
+import sunny from "../assets/sunny.svg";
+import unknownIcon from "../assets/unknown-icon.svg";
+
+import API_KEY from "../apiKey";
+
+const BASE_URL = `http://api.openweathermap.org/data/2.5/weather?APPID=${ API_KEY }&units=imperial&`;
+
+function isZipCode( location ) {
+	return !isNaN( parseInt( location ) );
+}
+
+function getWeatherIcon( conditionCode ) {
+	if ( conditionCode === 800 ) {
+		return sunny;
+	}
+
+	if ( conditionCode >= 200 && conditionCode < 600 ) {
+		return rainy;
+	}
+
+	if ( conditionCode >= 600 && conditionCode < 700 ) {
+		return snowy;
+	}
+
+	if ( conditionCode >= 801 && conditionCode <= 803 ) {
+		return partlyCloudy;
+	}
+
+	if ( conditionCode === 804 ) {
+		return cloudy;
+	}
+
+	return unknownIcon;
+}
+
+export function formatWeatherData( weatherData ) {
+	return {
+		  icon: getWeatherIcon( weatherData.weather[ 0 ].id )
+		, currentTemperature: weatherData.main.temp
+		, location: weatherData.name
+		, maxTemperature: weatherData.main.temp_max
+		, minTemperature: weatherData.main.temp_min
+		, humidity: weatherData.main.humidity
+		, wind: weatherData.wind.speed
+	};
+}
+
+export function buildUrl( location ) {
+	if ( isZipCode( location ) ) {
+		return BASE_URL + `zip=${ location }`;
+	}
+
+	return BASE_URL + `q=${ location }`;
+}
+
+```
+
+</details>
+
+<details>
+
+<summary><code>src/services/weatherService</code></summary>
+
+```javascript
+import axios from "axios";
+
+import store from "../store";
+
+import {
+	  formatWeatherData
+	, buildUrl
+} from "../utils/weatherUtils";
+import { setWeather } from "../ducks/weather";
+
+export function getWeather( location ) {
+	const weatherPromise = axios.get( buildUrl( location ) )
+		.then( response => {
+			console.log( response );
+
+			const formattedData = formatWeatherData( response.data );
+			console.log( formattedData );
+
+			return formattedData;
+		} );
+
+	store.dispatch( setWeather( weatherPromise ) );
+}
+```
+
+</details>
+
+<details>
+
+<summary><code>src/components/EnterLocation/EnterLocation.js</code></summary>
+
+```jsx
+import React, { Component } from "react";
+
+import "./EnterLocation.css";
+
+import { getWeather } from "../../services/weatherService";
+
+export default class EnterLocation extends Component {
+	constructor( props ) {
+		super( props );
+
+		this.state = { location: "" };
+
+		this.handleChange = this.handleChange.bind( this );
+		this.handleSubmit = this.handleSubmit.bind( this );
+	}
+
+	handleChange( event ) {
+		this.setState( { location: event.target.value } );
+	}
+
+	handleSubmit( event ) {
+		event.preventDefault();
+
+		getWeather( this.state.location );
+
+		this.setState( { location: "" } );
+	}
+
+	render() {
+		return (
+			<form
+				className="enter-location"
+				onSubmit={ this.handleSubmit }
+			>
+				<input
+					className="enter-location__input"
+					onChange={ this.handleChange }
+					placeholder="London / 84601"
+					type="text"
+					value={ this.state.location }
+				/>
+				<button
+					className="enter-location__submit"
+				>
+					Submit
+				</button>
+			</form>
+		);
+	}
+}
+```
+
+</details>
+
+</details>
+
+
+
+
+
+
+
+
+
 
 ## Contributions
 
