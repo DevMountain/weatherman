@@ -33,7 +33,7 @@ Begin by `npm install`ing the following dependencies:
 
 Once those complete, open up `src/store.js` and import `promiseMiddleware` from Redux Promise Middleware and `applyMiddleware` from Redux. To let our `store` make use of this middleware we need to change how we call `createStore`. Pass two new arguments after the reducer:
 
-* `{}` - An empty object. This could be an initial state, but we handle that in our reducer, so we aren't worried about this.
+* `undefined` - This could be an initial state, but we handle that in our reducer, so we aren't worried about it.
 * `applyMiddleware` - Invoke this, and pass `promiseMiddleware()` as the only argument. This will tell Redux that we want the middleware called on every action that is `dispatch`ed.
 
 The store is set up! Let's go add some actions to our reducer in `src/ducks/weather.js`. First off create a new action type of `SET_WEATHER` at the top of the file. Now we need a corresponding action creator, create and export a  function `setWeather` which takes a single parameter `weatherPromise`. This function should return an object where `type` is `FETCH_WEATHER` and `payload` is `weatherPromise`.
@@ -118,7 +118,7 @@ export default function weather( state = initialState, action ) {
 				, search: false
 				, weather: {}
 			};
-		case SET_WEATHER + "_FULFULLED":
+		case SET_WEATHER + "_FULFILLED":
 			return {
 				  error: false
 				, loading: false
@@ -389,13 +389,107 @@ In `render` replace the `EnterLocation` component with `{ this.renderChildren() 
 
 ```jsx
 // src/App.js
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
+import "./App.css";
+
+import hourglass from "./assets/hourglass.svg";
+
+import { reset } from "./ducks/weather";
+
+import CurrentWeather from "./components/CurrentWeather/CurrentWeather";
+import EnterLocation from "./components/EnterLocation/EnterLocation";
+import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
+
+class App extends Component {
+	renderChildren() {
+		const {
+			  error
+			, loading
+			, search
+			, weather
+			, reset
+		} = this.props;
+
+		if ( error ) {
+			return <ErrorMessage reset={ reset } />;
+		}
+
+		if ( loading ) {
+			return (
+				<img
+					alt="loading indicator"
+					src={ hourglass }
+				/>
+			);
+		}
+
+		if ( search ) {
+			return <EnterLocation />;
+		}
+
+		return (
+			<CurrentWeather />;
+		);
+	}
+
+	render() {
+		return (
+			<div className="app">
+				<h1 className="app__title">WEATHERMAN</h1>
+				{ this.renderChildren() }
+			</div>
+		);
+	}
+}
+
+export default connect( state => state, { reset } )( App );
 ```
 
 
 </details>
 
+### Step 4
 
+**Summary**
+
+In this step we will update `CurrentWeather` to display an icon and the actual weather information.
+
+**Detailed Instructions**
+
+Start this step in `src/App.js`. For `CurrentWeather` to work it needs data from the application state! In `renderChildren` pass `props.reset` and `props.weather` as props to `CurrentWeather`.
+
+All that is left now is to open up `src/components/CurrentWeather/CurrentWeather.js` and make it dynamic! Update the static data for location, icon, current temp, max temp, min temp, wind, and humidity to take their data from props.
+
+You should now have a functioning weather app that handles asynchronous application state!
+
+<details>
+
+<summary><b>Code Solution</b></summary>
+
+<details>
+
+<summary><code>src/App.js</code></summary>
+
+```jsx
+
+```
+
+</details>
+
+<details>
+
+<summary><code>src/components/CurrentWeather/CurrentWeather.js</code></summary>
+
+```jsx
+
+```
+
+</details>
+
+
+</details>
 
 
 
