@@ -164,14 +164,14 @@ Next, open up `src/utils/weatherUtils.js`. This file contains a handful of helpe
 
 Near the bottom of the file there is an incomplete `buildUrl` function, let's update it to actually do things. We want users to be able to search by zip code or by city name but they require different URL's. Using the (rudimentary) `isZip` function check whether the `location` parameter is a zip code. If `location` is a zip code return ```BASE_URL + `zip=${ location }` ``` otherwise return ```BASE_URL + `q=${ location }` ```.
 
-Now that we are ready to build a URL, open up `src/services/weatherService.js` where we'll be making the HTTP request. Inside of the `getWeather` function create a variable named `weatherPromise` and set it equal to the following:
+Now that we are ready to build a URL, open up `src/services/weatherService.js` and import `setWeather` from `src/ducks/weather.js`. Inside of the `getWeather` function create a variable named `weatherPromise` and set it equal to the following:
 
 ```javascript
 const weatherPromise = axios.get( buildUrl )
 	.then( response => {
 		console.log( response );
 
-		const formattedData = formatWeatherData( response );
+		const formattedData = formatWeatherData( response.data );
 		console.log( formattedData );
 
 		return formattedData;
@@ -209,7 +209,66 @@ export default "YOUR_API_KEY_HERE";
 <summary><code>src/utils/weatherUtils</code></summary>
 
 ```javascript
-export default "YOUR_API_KEY_HERE";
+
+import cloudy from "../assets/cloudy.svg";
+import partlyCloudy from "../assets/partly-cloudy.svg";
+import rainy from "../assets/rainy.svg";
+import snowy from "../assets/snowy.svg";
+import sunny from "../assets/sunny.svg";
+import unknownIcon from "../assets/unknown-icon.svg";
+
+import API_KEY from "../apiKey";
+
+const BASE_URL = `http://api.openweathermap.org/data/2.5/weather?APPID=${ API_KEY }&units=imperial&`;
+
+function isZipCode( location ) {
+	return !isNaN( parseInt( location ) );
+}
+
+function getWeatherIcon( conditionCode ) {
+	if ( conditionCode === 800 ) {
+		return sunny;
+	}
+
+	if ( conditionCode >= 200 && conditionCode < 600 ) {
+		return rainy;
+	}
+
+	if ( conditionCode >= 600 && conditionCode < 700 ) {
+		return snowy;
+	}
+
+	if ( conditionCode >= 801 && conditionCode <= 803 ) {
+		return partlyCloudy;
+	}
+
+	if ( conditionCode === 804 ) {
+		return cloudy;
+	}
+
+	return unknownIcon;
+}
+
+export function formatWeatherData( weatherData ) {
+	return {
+		  icon: getWeatherIcon( weatherData.weather[ 0 ].id )
+		, currentTemperature: weatherData.main.temp
+		, location: weatherData.name
+		, maxTemperature: weatherData.main.temp_max
+		, minTemperature: weatherData.main.temp_min
+		, humidity: weatherData.main.humidity
+		, wind: weatherData.wind.speed
+	};
+}
+
+export function buildUrl( location ) {
+	if ( isZipCode( location ) ) {
+		return BASE_URL + `zip=${ location }`;
+	}
+
+	return BASE_URL + `q=${ location }`;
+}
+
 ```
 
 </details>
@@ -219,7 +278,29 @@ export default "YOUR_API_KEY_HERE";
 <summary><code>src/services/weatherService</code></summary>
 
 ```javascript
-export default "YOUR_API_KEY_HERE";
+import axios from "axios";
+
+import store from "../store";
+
+import {
+	  formatWeatherData
+	, buildUrl
+} from "../utils/weatherUtils";
+import { setWeather } from "../ducks/weather";
+
+export function getWeather( location ) {
+	const weatherPromise = axios.get( buildUrl( location ) )
+		.then( response => {
+			console.log( response );
+
+			const formattedData = formatWeatherData( response.data );
+			console.log( formattedData );
+
+			return formattedData;
+		} );
+
+	store.dispatch( setWeather( weatherPromise ) );
+}
 ```
 
 </details>
@@ -228,8 +309,57 @@ export default "YOUR_API_KEY_HERE";
 
 <summary><code>src/components/EnterLocation/EnterLocation.js</code></summary>
 
-```javascript
-export default "YOUR_API_KEY_HERE";
+```jsx
+import React, { Component } from "react";
+
+import "./EnterLocation.css";
+
+import { getWeather } from "../../services/weatherService";
+
+export default class EnterLocation extends Component {
+	constructor( props ) {
+		super( props );
+
+		this.state = { location: "" };
+
+		this.handleChange = this.handleChange.bind( this );
+		this.handleSubmit = this.handleSubmit.bind( this );
+	}
+
+	handleChange( event ) {
+		this.setState( { location: event.target.value } );
+	}
+
+	handleSubmit( event ) {
+		event.preventDefault();
+
+		getWeather( this.state.location );
+
+		this.setState( { location: "" } );
+	}
+
+	render() {
+		return (
+			<form
+				className="enter-location"
+				onSubmit={ this.handleSubmit }
+			>
+				<input
+					className="enter-location__input"
+					onChange={ this.handleChange }
+					placeholder="London / 84601"
+					type="text"
+					value={ this.state.location }
+				/>
+				<button
+					className="enter-location__submit"
+				>
+					Submit
+				</button>
+			</form>
+		);
+	}
+}
 ```
 
 </details>
