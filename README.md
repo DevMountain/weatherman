@@ -473,7 +473,65 @@ You should now have a functioning weather app that handles asynchronous applicat
 <summary><code>src/App.js</code></summary>
 
 ```jsx
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
+import "./App.css";
+
+import hourglass from "./assets/hourglass.svg";
+
+import { reset } from "./ducks/weather";
+
+import CurrentWeather from "./components/CurrentWeather/CurrentWeather";
+import EnterLocation from "./components/EnterLocation/EnterLocation";
+import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
+
+class App extends Component {
+	renderChildren() {
+		const {
+			  error
+			, loading
+			, search
+			, weather
+			, reset
+		} = this.props;
+
+		if ( error ) {
+			return <ErrorMessage reset={ reset } />
+		}
+
+		if ( loading ) {
+			return (
+				<img
+					alt="loading indicator"
+					src={ hourglass }
+				/>
+			);
+		}
+
+		if ( search ) {
+			return <EnterLocation />;
+		}
+
+		return (
+			<CurrentWeather
+				reset={ reset }
+				weather={ weather }
+			/>
+		);
+	}
+
+	render() {
+		return (
+			<div className="app">
+				<h1 className="app__title">WEATHERMAN</h1>
+				{ this.renderChildren() }
+			</div>
+		);
+	}
+}
+
+export default connect( state => state, { reset } )( App );
 ```
 
 </details>
@@ -483,21 +541,68 @@ You should now have a functioning weather app that handles asynchronous applicat
 <summary><code>src/components/CurrentWeather/CurrentWeather.js</code></summary>
 
 ```jsx
+import React, { PropTypes } from "react";
 
+import "./CurrentWeather.css";
+
+export default function CurrentWeather( { weather, reset } ) {
+	const {
+		  currentTemperature
+		, humidity
+		, icon
+		, location
+		, maxTemperature
+		, minTemperature
+		, wind
+	} = weather;
+
+	return (
+		<div className="current-weather">
+			<div className="current-weather__weather">
+				<h3 className="current-weather__location">{ location }</h3>
+				<img
+					alt="sunny"
+					className="current-weather__icon"
+					src={ icon }
+				/>
+				<h3 className="current-weather__temp">{ currentTemperature }°</h3>
+
+				<div className="current-weather__separator" />
+
+				<ul className="current-weather__stats">
+					<li className="current-weather__stat">Max: { maxTemperature }°</li>
+					<li className="current-weather__stat">Min: { minTemperature }°</li>
+					<li className="current-weather__stat">Wind: { wind } MPH</li>
+					<li className="current-weather__stat">Humidity: { humidity }%</li>
+				</ul>
+			</div>
+			<button
+				className="current-weather__search-again"
+				onClick={ reset }
+			>
+				Search Again
+			</button>
+		</div>
+	);
+}
+
+CurrentWeather.propTypes = {
+	  reset: PropTypes.func.isRequired
+	, weather: PropTypes.shape( {
+		  icon: PropTypes.string.isRequired
+		, currentTemperature: PropTypes.number.isRequired
+		, maxTemperature: PropTypes.number.isRequired
+		, minTemperature: PropTypes.number.isRequired
+		, wind: PropTypes.number.isRequired
+		, humidity: PropTypes.number.isRequired
+	} ).isRequired
+};
 ```
 
 </details>
 
 
 </details>
-
-
-
-
-
-
-
-
 
 ## Contributions
 
