@@ -17,7 +17,7 @@ export default function weather( state = initialState, action ) {
 				, search: false
 				, weather: {}
 			};
-		case SET_WEATHER + "_FULFULLED":
+		case SET_WEATHER + "_FULFILLED":
 			return {
 				  error: false
 				, loading: false

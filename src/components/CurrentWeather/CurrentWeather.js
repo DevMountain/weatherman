@@ -3,16 +3,6 @@ import React, { PropTypes } from "react";
 import "./CurrentWeather.css";
 
 export default function CurrentWeather( { weather, reset } ) {
-	const {
-		  icon
-		, currentTemperature
-		, location
-		, maxTemperature
-		, minTemperature
-		, wind
-		, humidity
-	} = weather;
-
 	return (
 		<div className="current-weather">
 			<div className="current-weather__weather">
@@ -20,7 +10,7 @@ export default function CurrentWeather( { weather, reset } ) {
 				<img
 					alt="sunny"
 					className="current-weather__icon"
-					src={ icon }
+					src={ "" }
 				/>
 				<h3 className="current-weather__temp">44°</h3>
 
