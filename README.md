@@ -2,7 +2,7 @@
 
 # Weatherman
 
-<img src="https://raw.githubusercontent.com/DevMountain/weatherman/master/solution.PNG"/>
+<img src="https://raw.githubusercontent.com/DevMountain/weatherman/master/readme-assets/solution.PNG"/>
 
 **Project Summary**
 
@@ -182,7 +182,7 @@ Here we make a request to get some data, and use `.then` to run a callback funct
 
 Now that we have our promise of data we can dispatch it to the middleware and reducer. Invoke `store.dispatch` passing `setWeather( weatherPromise )`. Let's pause and take a look at how the data is flowing here.
 
-
+<img src="https://raw.githubusercontent.com/DevMountain/weatherman/master/readme-assets/data-flow.png" />
 
 
 
