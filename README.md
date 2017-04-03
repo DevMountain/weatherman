@@ -160,11 +160,27 @@ In this step we will actually fetch the weather data, as well as display our loa
 
 To start this step, create a new file in `src` named `apiKey.js`. You might note that `apiKey.js` is in the `.gitignore`, this is because API keys are something that should be kept secret! If your API key ends up on GitHub anyone could use it! `src/apiKey.js` should simply `export default "YOUR_API_KEY_HERE"`. You can find your API key on the OpenWeatherMap account page under the "API keys" tab.
 
-Next, open up `src/utils/weatherUtils.js`. This file contains a handful of helper functions for formatting data. Go ahead and import `API_KEY` from `src/apiKey.js`. Create a new variable named `BASE_URL` and set it equal to <code>`http://api.openweathermap.org/data/2.5/weather?APPID=${ API_KEY }&units=imperial&`</code>
+Next, open up `src/utils/weatherUtils.js`. This file contains a handful of helper functions for formatting data. Go ahead and import `API_KEY` from `src/apiKey.js`. Create a new variable named `BASE_URL` and set it equal to the string `http://api.openweathermap.org/data/2.5/weather?APPID=${ API_KEY }&units=imperial&`. It's good practice to set up a base URL like this, now we don't have to worry about changing it in a dozen places if the URL ever changes!
 
+Near the bottom of the file there is an incomplete `buildUrl` function, let's update it to actually do things. We want users to be able to search by zip code or by city name but they require different URL's. Using the (rudimentary) `isZip` function check whether the `location` parameter is a zip code. If `location` is a zip code return ```BASE_URL + `zip=${ location }` ``` otherwise return ```BASE_URL + `q=${ location }` ```.
 
+Now that we are ready to build a URL, open up `src/services/weatherService.js` where we'll be making the HTTP request. Inside of the `getWeather` function create a variable named `weatherPromise` and set it equal to the following:
 
+```javascript
+const weatherPromise = axios.get( buildUrl )
+	.then( response => {
+		console.log( response );
 
+		const formattedData = formatWeatherData( response );
+		console.log( formattedData );
+
+		return formattedData;
+	} );
+```
+
+Here we make a request to get some data, and use `.then` to run a callback function at some point in the future when the data comes back. In the callback function we log out the response to get an idea of what the data looks like by default, then we adjust it to match the structure we need using the `formatWeatherData` function from `src/utils/weatherUtils.js`, finally we return the data.
+
+Now that we have our promise of data we can dispatch it to the middleware and reducer. Invoke `store.dispatch` passing `setWeather( weatherPromise )`. Let's pause and take a look at how the data is flowing here.
 
 
 
