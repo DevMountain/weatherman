@@ -36,7 +36,7 @@ Once those complete, open up `src/store.js` and import `promiseMiddleware` from 
 * `undefined` - This could be an initial state, but we handle that in our reducer, so we aren't worried about it.
 * `applyMiddleware` - Invoke this, and pass `promiseMiddleware()` as the only argument. This will tell Redux that we want the middleware called on every action that is `dispatch`ed.
 
-The store is set up! Let's go add some actions to our reducer in `src/ducks/weather.js`. First off create a new action type of `SET_WEATHER` at the top of the file. Now we need a corresponding action creator, create and export a  function `setWeather` which takes a single parameter `weatherPromise`. This function should return an object where `type` is `FETCH_WEATHER` and `payload` is `weatherPromise`.
+The store is set up! Let's go add some actions to our reducer in `src/ducks/weather.js`. First off create a new action type of `SET_WEATHER` at the top of the file. Now we need a corresponding action creator, create and export a  function `setWeather` which takes a single parameter `weatherPromise`. This function should return an object where `type` is `SET_WEATHER` and `payload` is `weatherPromise`.
 
 We need to update the reducer to handle the new action, but because Redux Promise Middleware adjusts the action `type` we have to do it a little differently than normal. The first `case` should check if `action.type` is equal to `SET_WEATHER + "_PENDING"`, the middleware will add `_PENDING` for us while we wait for the promise to resolve. When this `case` is true, return a new object that looks something like this:
 
@@ -88,7 +88,7 @@ import promiseMiddleware from "redux-promise-middleware";
 
 import weather from "./ducks/weather";
 
-export default createStore( weather, {}, applyMiddleware( promiseMiddleware() ) );
+export default createStore( weather, undefined, applyMiddleware( promiseMiddleware() ) );
 ```
 
 
