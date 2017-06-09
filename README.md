@@ -117,6 +117,7 @@ In this step, we will add an action for fetching weather data and handle all pos
 
 ```js
 import { buildURL, formatWeatherData } from '../utils/weatherUtils';
+import axios from 'axios';
 
 const initialState = {
   error: false,
