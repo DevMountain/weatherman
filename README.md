@@ -56,12 +56,18 @@ In this step, we will add an action for fetching weather data and handle all pos
 ### Instructions
 
 * Open `src/ducks/weather.js`.
+* Import `axios` at the top of the file.
 * Create a new action type of `SET_WEATHER` that equals `"SET_WEATHER"`.
 * Create and export a new action creator called `setWeather`:
-  * This function should take a single parameter called `weatherPromise`.
+  * This function should take a single parameter called `location`.
+  * This function should create a variable called `URL` that equals the return value from `buildURL`.
+    * `buildURL` gets imported from `weatherUtils.js`. It takes a `location` parameter and returns an API url we can use with axios.
+  * This function should create a variable called `promise` that equals a promise using `axios.get` and the `URL` variable we just created.
+    * The `then` of the promise should capture the response and then return the value of `formatWeatherData( response.data )`.
+    * `formatWeatherData` gets imported from `weatherUtils.js`. It takes the object the API returns and formats it for our application to use.
   * This function should `return` an object with two properties:
     * `type` - This should equal our action type: `SET_WEATHER`.
-    * `payload` - This should equal the promise we get as a parameter: `weatherPromise`.
+    * `payload` - This should equal the promise we created above: `promise`.
 * Update the `reducer` to handle the `SET_WEATHER` action:
   * When the action type is `SET_WEATHER + "_PENDING"`:
     * <details>
@@ -110,47 +116,44 @@ In this step, we will add an action for fetching weather data and handle all pos
 <summary> <code> src/ducks/weather.js </code> </summary>
 
 ```js
-const RESET = "RESET";
-const SET_WEATHER = "SET_WEATHER";
+import { buildURL, formatWeatherData } from '../utils/weatherUtils';
 
 const initialState = {
   error: false,
-  loading: false,
+  loading: false, 
   search: true,
   weather: {}
 };
 
+const RESET = "RESET";
+const SET_WEATHER = "SET_WEATHER";
+
 export default function weather( state = initialState, action ) {
   switch ( action.type ) {
-    case RESET: 
-      return initialState;
-
     case SET_WEATHER + "_PENDING":
       return {
-        error: false, 
+        error: false,
         loading: true,
-        search: false, 
+        search: false,
         weather: {}
-      }
-
+      };
     case SET_WEATHER + "_FULFILLED":
       return {
-        error: false, 
+        error: false,
         loading: false,
         search: false,
         weather: action.payload
-      }
-
+      };
     case SET_WEATHER + "_REJECTED":
       return {
         error: true,
         loading: false,
         search: false,
         weather: {}
-      }
-
-    default: 
-      return state;
+      };
+      
+    case RESET: return initialState;
+    default: return state;
   }
 }
 
@@ -158,10 +161,12 @@ export function reset() {
   return { type: RESET };
 }
 
-export function setWeather( weatherPromise ) {
+export function setWeather( location ) {
+  var url = buildURL( location );
+  const promise = axios.get( url ).then( response => formatWeatherData( response.data ) );
   return {
     type: SET_WEATHER,
-    payload: weatherPromise
+    payload: promise
   }
 }
 ```
@@ -202,12 +207,8 @@ In this step, we will update our `weatherUtils` file to handle constructing a UR
 
 * Open `src/utils/weatherUtils.js`.
 * Import `API_KEY` from `src/apiKey.js`.
-* Create a variable called `BASE_URL` that equals:
+* Create modify the `BASE_URL` variable to equal:
   * ``` `http://api.openweathermap.org/data/2.5/weather?APPID=${ API_KEY }&units=imperial&` ```
-* Modify the `buildUrl` function at the bottom to do the following:
-  * This functions should check if `location` is a zip code using the `isZip` function.
-  * If `location` is a zip code return ```BASE_URL + `zip=${ location }` ```
-  * If `location` is not a zip code return ```BASE_URL + `q=${ location }` ```
 
 ### Solution
 
@@ -222,57 +223,13 @@ import rainy from "../assets/rainy.svg";
 import snowy from "../assets/snowy.svg";
 import sunny from "../assets/sunny.svg";
 import unknownIcon from "../assets/unknown-icon.svg";
-
 import API_KEY from "../apiKey";
-const BASE_URL = `http://api.openweathermap.org/data/2.5/weather?APPID=${ API_KEY }&units=imperial&`
 
-function isZipCode( location ) {
-  return !isNaN( parseInt( location ) );
-}
-
-function getWeatherIcon( conditionCode ) {
-  if ( conditionCode === 800 ) {
-    return sunny;
-  }
-
-  if ( conditionCode >= 200 && conditionCode < 600 ) {
-    return rainy;
-  }
-
-  if ( conditionCode >= 600 && conditionCode < 700 ) {
-    return snowy;
-  }
-
-  if ( conditionCode >= 801 && conditionCode <= 803 ) {
-    return partlyCloudy;
-  }
-
-  if ( conditionCode === 804 ) {
-    return cloudy;
-  }
-
-  return unknownIcon;
-}
-
-export function formatWeatherData( weatherData ) {
-  return {
-    icon: getWeatherIcon( weatherData.weather[ 0 ].id ),
-    currentTemperature: weatherData.main.temp,
-    location: weatherData.name,
-    maxTemperature: weatherData.main.temp_max,
-    minTemperature: weatherData.main.temp_min,
-    humidity: weatherData.main.humidity,
-    wind: weatherData.wind.speed
-  };
-}
-
-export function buildUrl( location ) {
-  if ( isZipCode( location ) ) {
-    return BASE_URL + `zip=${ location }`;
-  }
-
-  return BASE_URL + `q=${ location }`;
-}
+const BASE_URL = `http://api.openweathermap.org/data/2.5/weather?APPID=${ API_KEY }&units=imperial&`;
+function isZipCode( location ) { return !isNaN( parseInt( location ) ); }
+function getWeatherIcon( conditionCode ) { if ( conditionCode === 800 ) { return sunny; } if ( conditionCode >= 200 && conditionCode < 600 ) { return rainy; } if ( conditionCode >= 600 && conditionCode < 700 ) { return snowy; } if ( conditionCode >= 801 && conditionCode <= 803 ) { return partlyCloudy; } if ( conditionCode === 804 ) { return cloudy; } return unknownIcon; }
+export function formatWeatherData( weatherData ) { return { icon: getWeatherIcon( weatherData.weather[ 0 ].id ), currentTemperature: weatherData.main.temp, location: weatherData.name, maxTemperature: weatherData.main.temp_max, minTemperature: weatherData.main.temp_min, humidity: weatherData.main.humidity, wind: weatherData.wind.speed }; }
+export function buildURL( location ) { if ( isZipCode( location ) ) { return BASE_URL + `zip=${location}`; } return BASE_URL + `q=${location}`; }
 ```
 
 </details>
@@ -285,78 +242,31 @@ In this step, we will fetch the weather data from `OpenWeatherMap`'s API and pla
 
 ### Instructions
 
-* Open `src/services/weatherService.js`.
-* Import `setWeather` from `src/ducks/weather.js`.
-* Modify the `getWeather` function:
-  * This function should create a variable named `weatherPromise` that should equal:
-    * <details>
-      <summary> <code> weatherPromise </code> </summary>
-
-      ```js
-      const weatherPromise = axios.get( buildUrl(location) ).then(response => {
-        console.log( response );
-
-        const formattedData = formatWeatherData( response.data );
-        console.log( formattedData );
-
-        return formattedData;
-      });
-      ```
-      </details>
-  * This function should then dispatch our `setWeather` action creator with our newly created promise as the parameter.
 * Open `src/components/EnterLocation/EnterLocation.js`.
-* Import `getWeather` from `src/services/weatherService.js`.
+* Import `setWeather` from `src/ducks/weather.js`.
+* Add `setWeather` to the object in the `connect` statement.
 * Modify the `handleSubmit` method:
-  * This method should call `getWeather` and pass in `this.state.location`.
+  * This method should call `setWeather` ( remember it is on props ) and pass in `this.state.location`.
+* Open `src/ducks/weather.js`.
+* Add a `console.log( action.payload )` before the `return` statement in the `SET_WEATHER + '_FULFILLED'` case.
 
-Try entering in a zip code or location in the interface and press submit. You should now see `console.logs` appear in the debugger console. Let's pause and take a look at how the data will be flowing here.
-
-<img src="https://raw.githubusercontent.com/DevMountain/weatherman/master/readme-assets/data-flow.png" />
+Try entering in a zip code or location in the interface and press submit. You should now see a `console.log` appear in the debugger console.
 
 ### Solution
 
-<details>
-
-<summary> <code> src/services/weatherService.js </code> </summary>
-
-```js
-import axios from "axios";
-import { setWeather } from '../ducks/weather';
-import store from "../store";
-
-import {
-  formatWeatherData,
-  buildUrl
-} from "../utils/weatherUtils";
-
-
-export function getWeather( location ) {
-  const weatherPromise = axios.get( buildUrl(location) ).then(response => {
-    console.log( response );
-
-    const formattedData = formatWeatherData( response.data );
-    console.log( formattedData );
-
-    return formattedData;
-  });
-
-  store.dispatch( setWeather( weatherPromise ) );
-}
-```
-
-</details>
-
-<details>
+<details> 
 
 <summary> <code> src/components/EnterLocation/EnterLocation.js </code> </summary>
 
 ```jsx
 import React, { Component } from "react";
-import { getWeather } from '../../services/weatherService';
+import { connect } from "react-redux";
+
+import { setWeather } from '../../ducks/weather';
 
 import "./EnterLocation.css";
 
-export default class EnterLocation extends Component {
+class EnterLocation extends Component {
   constructor( props ) {
     super( props );
 
@@ -372,9 +282,7 @@ export default class EnterLocation extends Component {
 
   handleSubmit( event ) {
     event.preventDefault();
-
-    getWeather( this.state.location );
-
+    this.props.setWeather( this.state.location )
     this.setState( { location: "" } );
   }
 
@@ -400,6 +308,8 @@ export default class EnterLocation extends Component {
     );
   }
 }
+
+export default connect( state => state, { setWeather })( EnterLocation );
 ```
 
 </details>
@@ -419,7 +329,7 @@ In this step, we will be displaying all the different child components based on 
 
 * Open `src/App.js`.
 * Create a method above the `render` method called `renderChildren`:
-  * This method should deconstruct `props` for simplified referencing.
+  * This method should deconstruct `error`, `loading`, `search`, `weather`, and `reset` from `props` for simplified referencing.
   * This method should selectively render a component based on the conditions specified in the summary.
 * Replace `<EnterLocation />` in the render method with the invocation of `renderChildren`. 
 
