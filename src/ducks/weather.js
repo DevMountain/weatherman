@@ -1,3 +1,5 @@
+import utils from '../utils/weatherUtils';
+
 const initialState = {
   error: false,
   loading: false,
