@@ -13,7 +13,7 @@ In this project we'll be building a weather app that allows users to search for 
 * `Fork` and `clone` this repository.
 * `cd` into the project directory.
 * Run `npm i` to install dependencies.
-* Run `npm start` to spin up the development server
+* Run `npm start` to spin up the development server.
 
 ## Step 1
 
