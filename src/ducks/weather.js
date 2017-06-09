@@ -1,4 +1,4 @@
-import utils from '../utils/weatherUtils';
+import { buildURL, formatWeatherData } from '../utils/weatherUtils';
 
 const initialState = {
   error: false,
