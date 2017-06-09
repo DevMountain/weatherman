@@ -12,7 +12,6 @@ const RESET = "RESET";
 const SET_WEATHER = "SET_WEATHER";
 
 export default function weather( state = initialState, action ) {
-  console.log(state, initialState);
   switch ( action.type ) {
     case SET_WEATHER + "_PENDING":
       return {
@@ -22,6 +21,7 @@ export default function weather( state = initialState, action ) {
         weather: {}
       };
     case SET_WEATHER + "_FULFILLED":
+      console.log( action.payload );
       return {
         error: false,
         loading: false,
