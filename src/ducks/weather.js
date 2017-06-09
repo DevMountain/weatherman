@@ -1,8 +1,9 @@
-import utils from '../utils/weatherUtils';
+import { buildURL, formatWeatherData } from '../utils/weatherUtils';
+import axios from "axios";
 
 const initialState = {
   error: false,
-  loading: false,
+  loading: false, 
   search: true,
   weather: {}
 };
@@ -11,6 +12,7 @@ const RESET = "RESET";
 const SET_WEATHER = "SET_WEATHER";
 
 export default function weather( state = initialState, action ) {
+  console.log(state, initialState);
   switch ( action.type ) {
     case SET_WEATHER + "_PENDING":
       return {
@@ -43,6 +45,11 @@ export function reset() {
   return { type: RESET };
 }
 
-export function setWeather( weatherPromise ) {
-  return { payload: weatherPromise, type: SET_WEATHER };
+export function setWeather( location ) {
+  var url = buildURL( location );
+  const promise = axios.get( url ).then( response => formatWeatherData( response.data ) );
+  return {
+    type: SET_WEATHER,
+    payload: promise
+  }
 }
