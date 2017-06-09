@@ -208,7 +208,7 @@ In this step, we will update our `weatherUtils` file to handle constructing a UR
 
 * Open `src/utils/weatherUtils.js`.
 * Import `API_KEY` from `src/apiKey.js`.
-* Create modify the `BASE_URL` variable to equal:
+* Modify the `BASE_URL` variable to equal:
   * ``` `http://api.openweathermap.org/data/2.5/weather?APPID=${ API_KEY }&units=imperial&` ```
 
 ### Solution
