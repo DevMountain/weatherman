@@ -27,10 +27,10 @@ export default function CurrentWeather( { weather, reset } ) {
 				<div className="current-weather__separator" />
 
 				<ul className="current-weather__stats">
-					<li className="current-weather__stat">Max: { maxTemperature }°</li>
-					<li className="current-weather__stat">Min: { minTemperature }°</li>
-					<li className="current-weather__stat">Wind: { humidity } MPH</li>
-					<li className="current-weather__stat">Humidity: { wind }%</li>
+					<li className="current-weather__stat">Max: { minTemperature }°</li>
+					<li className="current-weather__stat">Min: { maxTemperature }°</li>
+					<li className="current-weather__stat">Wind: { humidity }%</li>
+					<li className="current-weather__stat">Humidity: { wind } MPH</li>
 				</ul>
 			</div>
 			<button
