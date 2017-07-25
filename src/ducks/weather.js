@@ -53,3 +53,4 @@ export function setWeather( location ) {
     payload: promise
   }
 }
+

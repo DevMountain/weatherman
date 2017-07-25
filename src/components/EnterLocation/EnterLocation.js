@@ -49,3 +49,4 @@ class EnterLocation extends Component {
 }
 
 export default connect( state => state, { setWeather })( EnterLocation );
+

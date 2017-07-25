@@ -54,3 +54,4 @@ CurrentWeather.propTypes = {
 		, humidity: PropTypes.number.isRequired
 	} ).isRequired
 };
+

@@ -19,3 +19,4 @@ export default function ErrorMessage( { reset } ) {
 ErrorMessage.propTypes = {
     reset: PropTypes.func.isRequired
 };
+
