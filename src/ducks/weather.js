@@ -36,7 +36,7 @@ export default function weather( state = initialState, action ) {
         weather: {}
       };
       
-    case RESET: return initialState;
+    case RESET: return console.error("Error: ", 404, " RESET not found");
     default: return state;
   }
 }
